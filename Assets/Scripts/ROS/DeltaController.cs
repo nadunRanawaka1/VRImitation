@@ -2,19 +2,22 @@
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Geometry;
+using Microsoft.MixedReality.Toolkit;
+using Microsoft.MixedReality.Toolkit.Input;
 /// <summary>
 /// This class will control movement using delta control
 /// </summary>
 public class DeltaController : MonoBehaviour
 {
     private bool controlPose; // Whether or not to send the pose 
-    private Transform prevControllerPose; //The previous location of the controller
+    
+    private Vector3 prevControllerPos; //The previous location of the controller
+    private Quaternion prevControllerRot; //Previous rotation of controller
     public GameObject rightController;
     public GameObject leftController;
 
     private Matrix4x4 Unity2ROS;
     private PoseMsg poseMsg;
-
 
     //ROS Stuff
 
@@ -25,13 +28,14 @@ public class DeltaController : MonoBehaviour
     {
         ROSConnection.GetOrCreateInstance().RegisterPublisher<PoseMsg>(topicName);
 
-        prevControllerPose = rightController.transform;
+        prevControllerPos = rightController.transform.localPosition;
+        prevControllerRot = rightController.transform.localRotation;
         controlPose = false;
         Unity2ROS = Matrix4x4.identity;
         Unity2ROS[0, 0] = -1;
         poseMsg = new PoseMsg();
 
-        InvokeRepeating("GetAndPublishPoseDelta", 0, 3.0f);
+        InvokeRepeating("GetAndPublishPoseDelta", 0, 0.05f);
     }
 
     // Update is called once per frame
@@ -58,19 +62,34 @@ public class DeltaController : MonoBehaviour
     public void GetAndPublishPoseDelta()
     {
         Transform currControllerPose = rightController.transform;
-        Vector3 posDiff = currControllerPose.position - prevControllerPose.position;
-        Quaternion rotDiff = currControllerPose.rotation * Quaternion.Inverse(prevControllerPose.rotation);
+        Vector3 posDiff = currControllerPose.localPosition - prevControllerPos;
+        Quaternion rotDiff = currControllerPose.localRotation * Quaternion.Inverse(prevControllerRot);
 
-        Debug.Log("This is the current controller position: " + currControllerPose.position);
-        Debug.Log("This is the previous controller Position: " + prevControllerPose.position);
+        Debug.Log("This is the current controller position: " + currControllerPose.localPosition);
+        Debug.Log("This is the previous controller Position: " + prevControllerPos);
 
         Matrix4x4 transform = Matrix4x4.TRS(posDiff, rotDiff, Vector3.one);
         var finalTransform = Unity2ROS * transform * Unity2ROS;
         Vector3 posDelta = finalTransform.GetColumn(3);
+        Debug.Log("This is the pos delta: " + posDelta.ToString("F5"));
+        
         Quaternion rotDelta = finalTransform.rotation;
+        Debug.Log("This is the rot delta: " + rotDelta);
         GetGeometryPoint(posDelta, poseMsg.position);
         GetGeometryQuaternion(rotDelta, poseMsg.orientation);
-        prevControllerPose = currControllerPose;
+
+        //Transforms into robot coordinate frame
+        double x = poseMsg.position.x;
+        double y = poseMsg.position.y;
+        double z = poseMsg.position.z;
+
+        poseMsg.position.y = x;
+        poseMsg.position.x = z;
+        poseMsg.position.z = y;
+
+
+        prevControllerPos = currControllerPose.localPosition;
+        prevControllerRot = currControllerPose.localRotation;
 
         if(controlPose)
         {
@@ -86,6 +105,7 @@ public class DeltaController : MonoBehaviour
 
     public void TogglePublish()
     {
+        Debug.Log("Toggled Publish");
         controlPose = !controlPose;
     }
 }
