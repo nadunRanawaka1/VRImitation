@@ -109,8 +109,8 @@
     <Compile Include="Assets\MRTK\SDK\Features\Input\Handlers\DictationHandler.cs" />
     <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\VisualThemes\Core\ThemeStateProperty.cs" />
     <Compile Include="Assets\MRTK\SDK\Experimental\MixedRealityKeyboard\MixedRealityKeyboardBase.cs" />
-    <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\Cursors\AnimatedCursor.cs" />
     <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\Collections\TileGridObjectCollection.cs" />
+    <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\Cursors\AnimatedCursor.cs" />
     <Compile Include="Assets\MRTK\SDK\Features\UX\Interactable\Scripts\States\InteractableStates.cs" />
     <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\VisualThemes\ThemeEngines\InteractableMaterialTheme.cs" />
     <Compile Include="Assets\MRTK\SDK\Features\UX\Scripts\Pointers\SpherePointerGrabPoint.cs" />

@@ -97,6 +97,7 @@
     <Compile Include="Assets\Oculus\SampleFramework\Core\DistanceGrab\Scripts\PauseOnInputLoss.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\HandsInteraction\Scripts\InteractableToolsCreator.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\DebugUI\Scripts\DebugUIBuilder.cs" />
+    <Compile Include="Assets\GTRI-Assets\Scripts\ROS\CameraSubscriber.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Firebase\SampleUI.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\Locomotion\Scripts\TeleportSupport.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\HandsInteraction\Scripts\ButtonController.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Scripts\SceneSampler.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\Locomotion\Scripts\TeleportTargetHandlerNode.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\DistanceGrab\Scripts\GrabbableCrosshair.cs" />
+    <Compile Include="Assets\GTRI-Assets\Scripts\UI\PointCloudHandler.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Scripts\TrainLocomotive.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\Locomotion\Scripts\TeleportOrientationHandlerThumbstick.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Scripts\TrainCrossingController.cs" />
@@ -194,8 +196,6 @@
     <Compile Include="Assets\Oculus\SampleFramework\Usage\SpatialAnchor\Scripts\AnchorUIManager.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Scripts\SelectivePassthroughExperience.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Scripts\TrackSegment.cs" />
-    <Compile Include="Assets\GTRI-Assets\Scripts\ROS\CameraSubscriber.cs" />
-    <Compile Include="Assets\GTRI-Assets\Scripts\UI\PointCloudHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Shaders\XingLightShader.shader" />
@@ -214,6 +214,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\Oculus\SampleFramework\Usage\DistanceGrab\Materials\CrosshairZCheat.shader" />
     <None Include="Assets\MRTK\StandardAssets\Shaders\ChannelPacker.shader" />
+    <None Include="Assets\GTRI-Assets\Shader\PointCloudQuest.shader" />
     <None Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Shaders\GradientSkybox.shader" />
     <None Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Materials\PassthroughLine.shader" />
     <None Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Materials\BackgroundColor.shader" />
@@ -246,6 +247,7 @@
     <None Include="Assets\MRTK\Providers\License.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\Oculus\SampleFramework\Core\HandsInteraction\Shaders\OculusSampleAlphaHandOutline.shader" />
+    <None Include="Assets\GTRI-Assets\Franka_Robot\franka_description\package.xml" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\MRTK\StandardAssets\Shaders\MixedRealityStandard.shader" />
     <None Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Materials\GlowEffect.shader" />
@@ -593,6 +595,9 @@
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.XR.MockHMD.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.XR.MockHMD.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Meta.WitAi.Conduit.Editor">
       <HintPath>Library\ScriptAssemblies\Meta.WitAi.Conduit.Editor.dll</HintPath>
     </Reference>
@@ -655,9 +660,6 @@
     </Reference>
     <Reference Include="Microsoft.MixedReality.Toolkit.Editor.ServiceInspectors">
       <HintPath>Library\ScriptAssemblies\Microsoft.MixedReality.Toolkit.Editor.ServiceInspectors.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.XR.MockHMD.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.XR.MockHMD.Editor.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
       <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.46f1\Editor\Data\NetStandard\ref\2.0.0\netstandard.dll</HintPath>
@@ -1090,6 +1092,10 @@
       <Project>{5771337D-E91F-D6E6-0DF3-12DE1DF9F0B0}</Project>
       <Name>Unity.Robotics.ROSTCPConnector.Messages.Player</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.XR.MockHMD.Player.csproj">
+      <Project>{941C7EC2-C408-64DA-0C38-94503CD6AA95}</Project>
+      <Name>Unity.XR.MockHMD.Player</Name>
+    </ProjectReference>
     <ProjectReference Include="Microsoft.MixedReality.Toolkit.Services.InputSimulation.Player.csproj">
       <Project>{9EFEBA78-928E-DA4A-37F8-679BC8674957}</Project>
       <Name>Microsoft.MixedReality.Toolkit.Services.InputSimulation.Player</Name>
@@ -1221,10 +1227,6 @@
     <ProjectReference Include="Microsoft.MixedReality.Toolkit.Providers.XRSDK.Oculus.Player.csproj">
       <Project>{11B787C2-1736-8007-8414-0A3D70EFEEED}</Project>
       <Name>Microsoft.MixedReality.Toolkit.Providers.XRSDK.Oculus.Player</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.XR.MockHMD.Player.csproj">
-      <Project>{941C7EC2-C408-64DA-0C38-94503CD6AA95}</Project>
-      <Name>Unity.XR.MockHMD.Player</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,2 @@
+To bring robot into Rviz, run: roslaunch urdf_tutorial display.launch model:='/home/rl2-ws1/robot_ws/FR3_Model/fr3_V2.urdf' 
+Then change the tf frame to link 0

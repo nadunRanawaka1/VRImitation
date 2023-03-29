@@ -9,45 +9,71 @@ using Microsoft.MixedReality.Toolkit.Input;
 /// </summary>
 public class DeltaController : MonoBehaviour
 {
-    private bool controlPose; // Whether or not to send the pose 
-    
+    private bool controlPose; // Whether or not to send the pose
+                              // 
+    private Transform prevControllerTransform;
     private Vector3 prevControllerPos; //The previous location of the controller
     private Quaternion prevControllerRot; //Previous rotation of controller
+    private Vector3 prevControllerEuler;
     public GameObject rightController;
     public GameObject leftController;
     public GameObject originPrefab;
 
     
     private Matrix4x4 Unity2ROS;
-    private PoseMsg poseMsg;
+    
     private GameObject origin;
     private GameObject currentController;
     private Transform controllerOriginalParent;
+    private delegate void PublishMessage();
+    private PublishMessage publisher;
 
     //ROS Stuff
 
-    public string topicName = "unity_pose";
+    public string poseTopicName = "unity_pose_delta";
+    public string positionTopicName = "unity_position_delta";
+    public string angleTopicName = "unity_angle_delta";
+    private PoseMsg poseMsg;
+    private PointMsg positionDeltaMsg;
+    private PointMsg angleDeltaMsg;
+
+    // Debugging Stuff
+    private double totalMovement;
 
     // Use this for initialization
     void Start()
     {
-        ROSConnection.GetOrCreateInstance().RegisterPublisher<PoseMsg>(topicName);
+        //ROSConnection.GetOrCreateInstance().RegisterPublisher<PoseMsg>(topicName);
+        SetupRos();
 
         prevControllerPos = rightController.transform.localPosition;
         prevControllerRot = rightController.transform.localRotation;
         controlPose = false;
         Unity2ROS = Matrix4x4.identity;
         Unity2ROS[0, 0] = -1;
-        poseMsg = new PoseMsg();
+        
         currentController = rightController; //TODO change this later
 
-        InvokeRepeating("GetAndPublishPoseDelta", 0, 0.05f);
+        InvokeRepeating("GetAndPublishPoseDeltaV2", 0, 0.05f);
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    private void SetupRos()
+    {
+        //ROSConnection.GetOrCreateInstance().RegisterPublisher<PoseMsg>(poseTopicName);
+        //publisher = new PublishMessage(PublishPoseMessage);
+        //poseMsg = new PoseMsg();
+
+        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointMsg>(positionTopicName);
+        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointMsg>(angleTopicName);
+        positionDeltaMsg = new PointMsg();
+        angleDeltaMsg = new PointMsg();
+        publisher = new PublishMessage(PublishPositionAndAngleDelta);
     }
 
     private static void GetGeometryPoint(Vector3 position, PointMsg geometryPoint)
@@ -57,6 +83,7 @@ public class DeltaController : MonoBehaviour
         geometryPoint.z = position.z;
     }
 
+
     private static void GetGeometryQuaternion(Quaternion quaternion, QuaternionMsg geometryQuaternion)
     {
         geometryQuaternion.x = quaternion.x;
@@ -65,6 +92,70 @@ public class DeltaController : MonoBehaviour
         geometryQuaternion.w = quaternion.w;
     }
 
+    public Vector3 RectifyEulerAngle(Vector3 eulerAngles)
+    {
+        //Rectify x
+        if (eulerAngles.x > 180)
+        {
+            eulerAngles.x -= 360;
+        }
+        if (eulerAngles.x < -180)
+        {
+            eulerAngles.x += 360;
+        }
+        //Rectify y
+        if (eulerAngles.y > 180)
+        {
+            eulerAngles.y -= 360;
+        }
+        if (eulerAngles.y < -180)
+        {
+            eulerAngles.y += 360;
+        }
+        // Rectify z
+        if (eulerAngles.z > 180)
+        {
+            eulerAngles.z -= 360;
+        }
+        if (eulerAngles.z < -180)
+        {
+            eulerAngles.z += 360;
+        }
+        return eulerAngles;
+    }
+
+    public void GetAndPublishPoseDeltaV2()
+    {
+        if (controlPose)
+        {
+            Transform currControllerTransform = currentController.transform;
+            /*Transform originalParent = currControllerTransform.parent;
+            currControllerTransform.SetParent(prevControllerTransform);*/
+
+            Vector3 currentEuler = currControllerTransform.localEulerAngles;
+            currentEuler = RectifyEulerAngle(currentEuler);
+
+            Vector3 posDiff = currControllerTransform.localPosition -  prevControllerPos;
+            posDiff /= currControllerTransform.localScale.x; //Dividing by scale to get the delta in world coordinate scale.
+            Vector3 rotDiffAsEuler = currentEuler -  prevControllerEuler;
+
+            
+            /*Debug.Log("Position Difference: " + posDiff);
+            Debug.Log("Angle difference: " + rotDiffAsEuler);*/
+
+
+            prevControllerPos = currControllerTransform.localPosition;
+            prevControllerEuler = currControllerTransform.localEulerAngles;
+            prevControllerEuler = RectifyEulerAngle(prevControllerEuler);
+
+            GetGeometryPoint(posDiff, positionDeltaMsg);
+            GetGeometryPoint(rotDiffAsEuler, angleDeltaMsg);
+            publisher();
+
+            //currControllerTransform.SetParent(originalParent);
+            //prevControllerTransform = currControllerTransform;
+        }
+    }
     public void GetAndPublishPoseDelta()
     {
         if (controlPose)
@@ -105,18 +196,29 @@ public class DeltaController : MonoBehaviour
 
             
             Debug.Log("This is the pos delta: " + posDelta.ToString("F5"));
-            Debug.Log("This is the rot delta: " + rotDelta);
-            PublishMessage();
+            //Debug.Log("This is the rot delta: " + rotDelta);
+            Debug.Log("This is the difference in Euler angles: " + rotDiff.eulerAngles);
+            PublishPoseMessage();
            
         }
 
         
     }
 
-    public void PublishMessage()
+    public void PublishPositionAndAngleDelta()
+    {
+        Debug.Log("Publishing position and angle delta separately");
+        Debug.Log("x delta: " + positionDeltaMsg.x);
+        totalMovement += positionDeltaMsg.x;
+        Debug.Log("total Movement" + totalMovement);
+        ROSConnection.GetOrCreateInstance().Publish(positionTopicName, positionDeltaMsg);
+        ROSConnection.GetOrCreateInstance().Publish(angleTopicName, angleDeltaMsg);
+    }
+
+    public void PublishPoseMessage()
     {
         Debug.Log(poseMsg);
-        ROSConnection.GetOrCreateInstance().Publish(topicName, poseMsg);
+        ROSConnection.GetOrCreateInstance().Publish(poseTopicName, poseMsg);
     }
 
     public void TogglePublish()
@@ -128,8 +230,11 @@ public class DeltaController : MonoBehaviour
             origin = GameObject.Instantiate(originPrefab, currentController.transform.position, currentController.transform.rotation);
             controllerOriginalParent = currentController.transform.parent;
             currentController.transform.SetParent(origin.transform);
+            prevControllerTransform = currentController.transform;
             prevControllerPos = currentController.transform.localPosition;
             prevControllerRot = currentController.transform.localRotation;
+            prevControllerEuler = currentController.transform.localEulerAngles;
+            prevControllerEuler = RectifyEulerAngle(prevControllerEuler);
         }
         else
         {

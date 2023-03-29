@@ -375,5 +375,5 @@ Library/PlayerDataCache
 Library/Il2cppBuildCache
 Library/il2cpp_android_arm64-v8a
 Assets/Oculus
-Temp
-Build
+Temp/
+Build/

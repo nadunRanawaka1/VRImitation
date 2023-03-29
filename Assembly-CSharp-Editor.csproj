@@ -828,6 +828,10 @@
       <Project>{895A8D8C-A88C-9E6F-18EA-8EBBE9E158A8}</Project>
       <Name>Unity.Robotics.ROSTCPConnector.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.XR.MockHMD.csproj">
+      <Project>{CCD70B68-DDD7-8906-288A-0D1875C6BDB9}</Project>
+      <Name>Unity.XR.MockHMD</Name>
+    </ProjectReference>
     <ProjectReference Include="Microsoft.MixedReality.Toolkit.Providers.WindowsSceneUnderstanding.Editor.csproj">
       <Project>{F1C96684-4465-DCE9-948B-9CF43FA5A9FC}</Project>
       <Name>Microsoft.MixedReality.Toolkit.Providers.WindowsSceneUnderstanding.Editor</Name>
@@ -1008,6 +1012,10 @@
       <Project>{F3045B27-2EE7-79B1-53A6-9748D36DFC42}</Project>
       <Name>Unity.XR.OpenXR.Features.OculusQuestSupport</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.XR.MockHMD.Editor.csproj">
+      <Project>{F2151777-57A1-3BD7-E345-35296F564100}</Project>
+      <Name>Unity.XR.MockHMD.Editor</Name>
+    </ProjectReference>
     <ProjectReference Include="Meta.WitAi.Conduit.Editor.csproj">
       <Project>{1FD1141C-F7C4-AFEA-CB4E-1FCE3CA56228}</Project>
       <Name>Meta.WitAi.Conduit.Editor</Name>
@@ -1151,14 +1159,6 @@
     <ProjectReference Include="Microsoft.MixedReality.Toolkit.Providers.XRSDK.Oculus.csproj">
       <Project>{383BD6F6-8F63-FEE6-CB7A-B3BF4C4CC9FD}</Project>
       <Name>Microsoft.MixedReality.Toolkit.Providers.XRSDK.Oculus</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.XR.MockHMD.csproj">
-      <Project>{CCD70B68-DDD7-8906-288A-0D1875C6BDB9}</Project>
-      <Name>Unity.XR.MockHMD</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.XR.MockHMD.Editor.csproj">
-      <Project>{F2151777-57A1-3BD7-E345-35296F564100}</Project>
-      <Name>Unity.XR.MockHMD.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
