@@ -106,6 +106,7 @@
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Locomotion\Scripts\LocomotionSampleSupport.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Scripts\Flashlight.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\SpatialAnchor\Scripts\AnchorSpawner.cs" />
+    <Compile Include="Assets\GTRI-Assets\Scripts\ROS\PositionController.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Locomotion\Scripts\CharacterCapsule.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\Locomotion\Scripts\LocomotionController.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Core\Locomotion\Scripts\TeleportTargetHandlerPhysical.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Assets\Oculus\SampleFramework\Usage\SpatialAnchor\Scripts\AnchorUIManager.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\Passthrough\Scripts\SelectivePassthroughExperience.cs" />
     <Compile Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Scripts\TrackSegment.cs" />
+    <Compile Include="Assets\GTRI-Assets\Scripts\ROS\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Shaders\XingLightShader.shader" />

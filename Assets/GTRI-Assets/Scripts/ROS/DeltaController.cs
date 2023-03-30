@@ -76,22 +76,6 @@ public class DeltaController : MonoBehaviour
         publisher = new PublishMessage(PublishPositionAndAngleDelta);
     }
 
-    private static void GetGeometryPoint(Vector3 position, PointMsg geometryPoint)
-    {
-        geometryPoint.x = position.x;
-        geometryPoint.y = position.y;
-        geometryPoint.z = position.z;
-    }
-
-
-    private static void GetGeometryQuaternion(Quaternion quaternion, QuaternionMsg geometryQuaternion)
-    {
-        geometryQuaternion.x = quaternion.x;
-        geometryQuaternion.y = quaternion.y;
-        geometryQuaternion.z = quaternion.z;
-        geometryQuaternion.w = quaternion.w;
-    }
-
     public Vector3 RectifyEulerAngle(Vector3 eulerAngles)
     {
         //Rectify x
@@ -148,8 +132,8 @@ public class DeltaController : MonoBehaviour
             prevControllerEuler = currControllerTransform.localEulerAngles;
             prevControllerEuler = RectifyEulerAngle(prevControllerEuler);
 
-            GetGeometryPoint(posDiff, positionDeltaMsg);
-            GetGeometryPoint(rotDiffAsEuler, angleDeltaMsg);
+            Utils.GetGeometryPoint(posDiff, positionDeltaMsg);
+            Utils.GetGeometryPoint(rotDiffAsEuler, angleDeltaMsg);
             publisher();
 
             //currControllerTransform.SetParent(originalParent);
@@ -177,8 +161,8 @@ public class DeltaController : MonoBehaviour
 
             Quaternion rotDelta = finalTransform.rotation;
 
-            GetGeometryPoint(posDelta, poseMsg.position);
-            GetGeometryQuaternion(rotDelta, poseMsg.orientation);
+            Utils.GetGeometryPoint(posDelta, poseMsg.position);
+            Utils.GetGeometryQuaternion(rotDelta, poseMsg.orientation);
 
             //Transforms into robot coordinate frame
             // TODO: handle this in a new function or on the ROS side.
