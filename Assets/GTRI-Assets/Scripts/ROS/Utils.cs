@@ -2,6 +2,7 @@
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Geometry;
+using System;
 
 public class Utils : MonoBehaviour
 {
@@ -31,5 +32,21 @@ public class Utils : MonoBehaviour
         rosQuat.y = unityQuat.y;
         rosQuat.z = unityQuat.z;
         rosQuat.w = unityQuat.w;
+    }
+
+    long UnixTimeNanoseconds()
+    {
+        DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        return (DateTime.UtcNow - epochStart).Ticks * 100;
+    }
+
+    public static void AddTimeStamp(PointStampedMsg msg)
+    {
+        DateTime currentTime = DateTime.UtcNow;
+        DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        uint nanoseconds = (uint)(currentTime - epochStart).Ticks * 100;
+        uint seconds = (uint)(currentTime - epochStart).TotalSeconds;
+        msg.header.stamp.sec = seconds;
+        msg.header.stamp.nanosec = nanoseconds;
     }
 }

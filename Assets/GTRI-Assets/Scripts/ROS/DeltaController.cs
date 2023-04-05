@@ -34,8 +34,8 @@ public class DeltaController : MonoBehaviour
     public string positionTopicName = "unity_position_delta";
     public string angleTopicName = "unity_angle_delta";
     private PoseMsg poseMsg;
-    private PointMsg positionDeltaMsg;
-    private PointMsg angleDeltaMsg;
+    private PointStampedMsg positionDeltaMsg;
+    private PointStampedMsg angleDeltaMsg;
 
     // Debugging Stuff
     private double totalMovement;
@@ -69,10 +69,10 @@ public class DeltaController : MonoBehaviour
         //publisher = new PublishMessage(PublishPoseMessage);
         //poseMsg = new PoseMsg();
 
-        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointMsg>(positionTopicName);
-        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointMsg>(angleTopicName);
-        positionDeltaMsg = new PointMsg();
-        angleDeltaMsg = new PointMsg();
+        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointStampedMsg>(positionTopicName);
+        ROSConnection.GetOrCreateInstance().RegisterPublisher<PointStampedMsg>(angleTopicName);
+        positionDeltaMsg = new PointStampedMsg();
+        angleDeltaMsg = new PointStampedMsg();
         publisher = new PublishMessage(PublishPositionAndAngleDelta);
     }
 
@@ -132,8 +132,10 @@ public class DeltaController : MonoBehaviour
             prevControllerEuler = currControllerTransform.localEulerAngles;
             prevControllerEuler = RectifyEulerAngle(prevControllerEuler);
 
-            Utils.GetGeometryPoint(posDiff, positionDeltaMsg);
-            Utils.GetGeometryPoint(rotDiffAsEuler, angleDeltaMsg);
+            Utils.GetGeometryPoint(posDiff, positionDeltaMsg.point);
+            Utils.GetGeometryPoint(rotDiffAsEuler, angleDeltaMsg.point);
+            Utils.AddTimeStamp(positionDeltaMsg);
+            Utils.AddTimeStamp(angleDeltaMsg);
             publisher();
 
             //currControllerTransform.SetParent(originalParent);
@@ -192,8 +194,8 @@ public class DeltaController : MonoBehaviour
     public void PublishPositionAndAngleDelta()
     {
         Debug.Log("Publishing position and angle delta separately");
-        Debug.Log("x delta: " + positionDeltaMsg.x);
-        totalMovement += positionDeltaMsg.x;
+        Debug.Log("x delta: " + positionDeltaMsg.point.x);
+        totalMovement += positionDeltaMsg.point.x;
         Debug.Log("total Movement" + totalMovement);
         ROSConnection.GetOrCreateInstance().Publish(positionTopicName, positionDeltaMsg);
         ROSConnection.GetOrCreateInstance().Publish(angleTopicName, angleDeltaMsg);
